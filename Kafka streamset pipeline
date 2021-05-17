@@ -1,0 +1,124 @@
+************************************************
+	Kafka pipeline using streamsets
+************************************************
+
+
+##################################################NOTE############################################
+CDH ubuntu version 14
+CDH version	5.9.3
+Kafka version 2.2.0
+
+Best practices of bokers------
+1-Brokers running on dedicated harddisk
+	-- Brokers running on worker service(worker node its not master service) it not share harddisk with OS or not other demons
+	-- Means brokers need seperate DN
+2-file sysytem sfs
+
+
+Mirror maker--
+	-- We not need beacuse hadoop cluster no need backup it will create 3 copys of ech file.
+	It is backup service of kafka. It make exactly same copy of kafka on another cluster it is kafka service
+
+During kafka Adding service it showing errors then we need to change the heap size At list 256 Mb
+steps--
+	Click on clousera manager open in new tab 
+		-cluster
+		-kafka
+		-configuration
+		-Search Heap size 
+		-Set heap size atlist 256MB
+#################################################################################################
+
+
+
+## You need to install kafka parcel during CDH installation
+  - At select parcel page
+  - Give kafka parcel as - https://archive.cloudera.com/kafka/parcels/2.2.0/
+
+
+## Send the sample credit card data file (AVRO format) to DC
+
+## Install streamsets on Cloudera
+
+## Open stremsets data collector
+  - <pub-dns>:18630
+
+## Create two pipelines one for producer and one for consumer
+
+
+-----**** Producer pipeline ****----for data read
+
+## Send ccsample file to server
+
+## Drag Directory and kafka producer to canvas and configure it accordingly
+
+Enter the following settings:
+
+File Name Pattern Mode - Glob (binary)
+
+Data Format - Avro
+
+Files Directory - The absolute file path to the directory containing the sample .avro files. (eg : /home/ubuntu/)
+
+File Name Pattern - cc*
+
+## In kafka producer give the FQDN of broker list (comma seperated with port no) and give the topic name. Give data format as SDC
+
+ 
+-----**** Consumer pipeline ****-----
+
+## Drag the kafka consumer, field type converter, field masker, hadoop fs and S3 to canvas
+
+## In kafka consumer give FQDN of broker and zookeeper. Also give the same topic name. Give data format as SDC
+
+
+## In field converter - type '/card_number' in the 'Fields to Convert' text box and set type 'String' in 'Convert to String'
+
+
+## In field masker - In the 'Field Masker' stage configuration type '/card_number', set the mask type to 'custom'. Give mask as > ************#### (Only last 4 digits will be visible)
+
+
+## In hadoop fs five Hadoop URI - hdfs://nn:8020/
+     	In data format give avro ; schema location - in pipeline ; 
+	
+schema -> 
+
+{"namespace" : "cctest.avro",
+ "type": "record",
+ "name": "CCTest",
+ "doc": "Test Credit Card Transactions",
+ "fields": [
+            {"name": "transaction_date", "type": "string"},
+            {"name": "card_number", "type": "string"},
+            {"name": "card_expiry_date", "type": "string"},
+            {"name": "card_security_code", "type": "string"},
+            {"name": "purchase_amount", "type": "string"},
+            {"name": "description", "type": "string"}
+           ]
+} 
+ 
+	> avro compression - bzip2
+ 
+
+## In S3 give access key and secret acces key , specify region and give bucket name
+		In data format give avro ; schema location - in pipeline ; 
+	schema -> 
+
+{"namespace" : "cctest.avro",
+ "type": "record",
+ "name": "CCTest",
+ "doc": "Test Credit Card Transactions",
+ "fields": [	
+            {"name": "transaction_date", "type": "string"},
+            {"name": "card_number", "type": "string"},
+            {"name": "card_expiry_date", "type": "string"},
+            {"name": "card_security_code", "type": "string"},
+            {"name": "purchase_amount", "type": "string"},
+            {"name": "description", "type": "string"}
+           ]
+} 
+ 
+	> avro compression - bzip2
+
+
+## First run consumer pipeline then run producer pipeline

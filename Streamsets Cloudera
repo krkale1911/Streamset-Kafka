@@ -1,0 +1,103 @@
+################################################
+	Streamsets on Cloudera Manager
+################################################
+
+*************************************************NOTE*************************************************************
+Stream set is not service of cloudera.
+Stream set is 3rd party tool and we have to install it manually
+follw bellow steps 
+***************************************************************************************************************
+
+
+
+
+Log in to CM host
+
+
+****---- Install Streamsets CSD ----****
+
+			-------------------------------CSD Custome Service Jar It showing service in cloudera manager
+after downloading 
+
+$ wget https://archives.streamsets.com/datacollector/2.4.1.0/csd/STREAMSETS-2.4.1.0.jar
+
+ls
+
+$ sudo mv STREAMSETS-2.4.1.0.jar /opt/cloudera/csd/
+ll
+		-----------------cloudera-scm  is user & Group of cloudera Manager (SCM server Means CM only)
+
+cd /opt/cloudera/csd/
+
+$ sudo chown cloudera-scm:cloudera-scm /opt/cloudera/csd/STREAMSETS*.jar
+
+cd
+
+$ sudo chmod 644 /opt/cloudera/csd/STREAMSETS*.jar
+
+$ sudo service cloudera-scm-server restart
+
+## Restart cloudera management services
+
+
+
+****---- Download parcel for stramsets data collector (https://archives.streamsets.com/index.html) ----****All avilable on this site
+
+
+
+$  wget https://archives.streamsets.com/datacollector/2.4.1.0/parcel/STREAMSETS_DATACOLLECTOR-2.4.1.0-trusty.parcel
+
+
+
+
+****---- Download the hash file ----****--------------it use to check intigrity like MD5,SSH
+
+
+$ wget https://archives.streamsets.com/datacollector/2.4.1.0/parcel/STREAMSETS_DATACOLLECTOR-2.4.1.0-trusty.parcel.sha
+
+
+
+
+****---- Move the parcel and hash file to the local repository ----****
+                  -----------------------location of local parcels repositry is --       /opt/cloudera/parcel-repo/
+
+$ sudo mv STREAMSETS_DATACOLLECTOR-2.4.1.0-trusty.parcel /opt/cloudera/parcel-repo/
+
+$ sudo mv STREAMSETS_DATACOLLECTOR-2.4.1.0-trusty.parcel.sha /opt/cloudera/parcel-repo/
+   
+cd /opt/cloudera/parcel-repo/
+
+ll 
+		All parcels can be seen here
+
+
+****---- Change the ownership of parcel and hash file ----****
+
+$ cd /opt/cloudera/parcel-repo/
+
+$ sudo chown cloudera-scm:cloudera-scm STREAMSETS_DATACOLLECTOR-2.4.1.0-trusty.parcel
+
+$ sudo chown cloudera-scm:cloudera-scm STREAMSETS_DATACOLLECTOR-2.4.1.0-trusty.parcel.sha
+
+cd
+
+
+## Distribute and activate parcel
+	Go to CM UI and click on parcel UI
+	Select local cluster
+	cheack for new parcels
+	Click distribute parcel for Stramsets
+	Click activate
+
+## Add stramsets service
+	Go to CM, click add service and add streamsets	
+	Stream set data collector start on CM
+
+	come on new tab and login with steamset Stream set IP CM:18630 port number
+
+
+
+
+
+
+
